@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Journey Optimization – CEO Dashboard</title>
+    <style>
+        /* Base styles for the body, setting font, background, and text color */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+            margin: 0;
+            padding: 1rem;
+            line-height: 1.6;
+        }
+        
+        /* Container for the entire dashboard, providing max-width, centering, and styling */
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        /* Header section styling with a gradient background, padding, and text alignment */
+        .header {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
+        
+        /* Styling for the main heading in the header */
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+        
+        /* Styling for the subheading in the header */
+        .header p {
+            margin: 0.5rem 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        /* General content area padding */
+        .content {
+            padding: 2rem;
+        }
+        
+        /* Grid layout for key metrics on larger screens (desktop) */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Mobile-specific grid container for metrics, using two columns */
+        .mobile-metrics-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Column styling for mobile metrics, arranging items vertically */
+        .mobile-metrics-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        /* Styling for individual metric cards */
+        .metric-card {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #e5e7eb;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        /* Hover effects for metric cards */
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* Styling for the main value in metric cards */
+        .metric-card h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #111827;
+            line-height: 1.2;
+        }
+        
+        /* Styling for the description text in metric cards */
+        .metric-card p {
+            margin: 0.25rem 0 0;
+            font-size: 0.8rem;
+            color: #6b7280;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+        
+        /* Highlight color for positive metrics */
+        .highlight {
+            color: #10b981 !important;
+        }
+        
+        /* Critical color for negative metrics */
+        .critical {
+            color: #ef4444 !important;
+        }
+        
+        /* Warning color for moderate metrics */
+        .warning {
+            color: #f59e0b !important;
+        }
+        
+        /* General styling for dashboard sections */
+        .section {
+            margin-bottom: 2rem;
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        /* Styling for section headings */
+        .section h3 {
+            margin: 0 0 1rem 0;
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        /* Styling for the objectives list */
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        /* Styling for individual list items in objectives */
+        .objectives-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Remove bottom border for the last objective list item */
+        .objectives-list li:last-child {
+            border-bottom: none;
+        }
+        
+        /* Custom bullet point for objectives list items */
+        .objectives-list li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+        
+        /* Container for progress items */
+        .progress-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Styling for individual progress items (e.g., doughnut charts) */
+        .progress-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        /* Label for progress items */
+        .progress-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        /* Value display for progress items */
+        .progress-value {
+            font-weight: 700;
+            color: #1f2937;
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        
+        /* Container for doughnut charts, ensuring proper sizing */
+        .doughnut-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+        
+        /* Styling for the doughnut chart itself, using conic-gradient for progress */
+        .doughnut-chart {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            position: relative;
+            background: conic-gradient(
+                var(--progress-color) 0deg var(--progress-angle),
+                #e5e7eb var(--progress-angle) 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Inner circle of the doughnut chart to create the "hole" effect */
+        .doughnut-chart::before {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        /* Center text for the doughnut chart, displaying the percentage */
+        .doughnut-center {
+            position: absolute;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            z-index: 1;
+        }
+        
+        /* Container for linear progress bars */
+        .progress-bar-container {
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        /* Styling for the actual progress bar within the container */
+        .progress-bar {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.8s ease-in-out;
+        }
+        
+        /* Specific colors for different progress bar statuses */
+        .progress-reviewed { background-color: #10b981; }
+        .progress-implemented { background-color: #3b82f6; }
+        .progress-pending { background-color: #f59e0b; }
+        
+        /* Grid layout for channel cards */
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        /* Styling for individual channel cards */
+        .channel-card {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        /* Hover effects for channel cards */
+        .channel-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Header section within channel cards */
+        .channel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        /* Title styling for channel cards */
+        .channel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        /* Count display for journeys in channel cards */
+        .channel-count {
+            background: #f3f4f6;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+        }
+        
+        /* Individual progress item within channel cards */
+        .channel-progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        /* Remove bottom margin for the last channel progress item */
+        .channel-progress-item:last-child {
+            border-bottom: 0;
+        }
+        
+        /* Content area for channel progress (label and bar) */
+        .channel-progress-content {
+            flex: 1;
+            margin-right: 1rem;
+        }
+        
+        /* Label for channel progress bars */
+        .channel-progress-label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Container for channel progress bars */
+        .channel-progress-bar-container {
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 8px;
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        /* Actual progress bar within channel progress */
+        .channel-progress-bar {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.8s ease-in-out;
+        }
+        
+        /* Value display for channel progress (percentage) */
+        .channel-progress-value {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 0.9rem;
+            min-width: 40px;
+            text-align: right;
+        }
+        
+        /* Container for filter dropdowns */
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        /* Styling for each filter group (label + select) */
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        /* Label for filter inputs */
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        /* Styling for filter select inputs */
+        .filter-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background: white;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        /* Focus styles for filter inputs */
+        .filter-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Styling for the main journey table */
+        .journey-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* Table header cell styling */
+        .journey-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        /* Table data cell styling */
+        .journey-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: top;
+        }
+        
+        /* Hover effect for table rows */
+        .journey-table tr:hover {
+            background-color: #f8fafc;
+        }
+        
+        /* Styling for journey names in the table */
+        .journey-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Styling for journey comments in the table */
+        .journey-comment {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+        
+        /* Styling for channel tags in the table */
+        .journey-channel {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        /* Styling for complexity text in the table */
+        .journey-complexity {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        /* Base styling for status pills */
+        .status-pill {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+        }
+        
+        /* Specific colors for different status pills */
+        .status-in-progress { background-color: #3b82f6; }
+        .status-pending { background-color: #f59e0b; }
+        .status-blocked { background-color: #ef4444; }
+        .status-completed { background-color: #10b981; }
+        
+        /* Styling for target date input fields */
+        .target-date-input {
+            width: 120px;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.85rem;
+        }
+
+        /* Styling for the disclaimer text next to target date */
+        .target-date-disclaimer {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-left: 0.5rem;
+            font-style: italic;
+        }
+
+        /* New style for red text */
+        .red-text {
+            color: #ef4444; /* Tailwind's red-500 */
+        }
+
+        /* Style for the weekly targeting note */
+        .weekly-targeting-note {
+            font-size: 0.85rem;
+            color: #3b82f6; /* Tailwind's blue-500 */
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        /* Style for the application-specific targeting note */
+        .application-targeting-note {
+            font-size: 0.85rem;
+            color: #10b981; /* Tailwind's green-500, for example */
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+        
+        /* Footer styling */
+        .footer {
+            background: #f3f4f6;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        /* Strong text within the footer */
+        .footer strong {
+            color: #1f2937;
+        }
+        
+        /* Media queries for responsive design (mobile adjustments) */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .mobile-metrics-container {
+                gap: 0.75rem;
+            }
+            
+            .mobile-metrics-column {
+                gap: 0.75rem;
+            }
+            
+            .metric-card {
+                padding: 0.5rem;
+                min-height: 80px;
+            }
+            
+            .metric-card h2 {
+                font-size: 1.2rem;
+            }
+            
+            .metric-card p {
+                font-size: 0.7rem;
+            }
+            
+            .filters-container {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.75rem;
+            }
+            
+            .filter-group {
+                min-width: auto;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.85rem;
+            }
+            
+            /* Mobile table improvements */
+            .journey-table {
+                font-size: 0.75rem;
+                min-width: 100%;
+                table-layout: fixed;
+            }
+            
+            .journey-table th,
+            .journey-table td {
+                padding: 0.5rem 0.25rem;
+                word-wrap: break-word;
+                vertical-align: top;
+            }
+            
+            /* Column widths for mobile table */
+            .journey-table th:nth-child(1),
+            .journey-table td:nth-child(1) { width: 40%; }
+            .journey-table th:nth-child(2),
+            .journey-table td:nth-child(2) { width: 60%; }
+            
+            .journey-name {
+                font-size: 0.8rem;
+                margin-bottom: 0.25rem;
+                font-weight: 600;
+                line-height: 1.2;
+            }
+            
+            .journey-comment {
+                font-size: 0.7rem;
+                line-height: 1.3;
+                color: #6b7280;
+            }
+            
+            .journey-channel {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.3rem;
+                white-space: nowrap;
+            }
+            
+            .journey-complexity {
+                font-size: 0.7rem;
+                line-height: 1.2;
+            }
+            
+            .status-pill {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.4rem;
+            }
+            
+            .target-date-input {
+                width: 80px;
+                padding: 0.2rem;
+                font-size: 0.7rem;
+            }
+            
+            /* Add horizontal scroll for very small screens if table content overflows */
+            .journey-table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Customer Journey Optimization</h1>
+            <p>Executive Dashboard – Real-time Performance Tracking</p>
+        </div>
+
+        <div class="content">
+            <!-- Key Metrics Section -->
+            <div class="mobile-metrics-container">
+                <!-- Left Column of Metrics -->
+                <div class="mobile-metrics-column">
+                    <div class="metric-card">
+                        <h2>224</h2>
+                        <p>Total Journeys</p>
+                    </div>
+                    <div class="metric-card">
+                        <h2>305</h2>
+                        <p>SMS Content</p>
+                    </div>
+                    <div class="metric-card">
+                        <h2>12,892</h2>
+                        <p>Mobile Content</p>
+                    </div>
+                </div>
+                
+                <!-- Right Column of Metrics -->
+                <div class="mobile-metrics-column">
+                    <div class="metric-card">
+                        <h2 class="highlight">100%</h2>
+                        <p>Reviewed</p>
+                    </div>
+                    <div class="metric-card">
+                        <h2 class="highlight">45%</h2>
+                        <p>Enhanced</p>
+                    </div>
+                    <!-- Removed the ATM Implemented metric card as per user request -->
+                </div>
+            </div>
+
+            <!-- Overall Progress Section -->
+            <div class="section">
+                <h3>Overall Progress</h3>
+                <div class="progress-container">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                        <!-- Progress Item: Reviewed -->
+                        <div class="progress-item">
+                            <div class="progress-label">Reviewed</div>
+                            <div class="doughnut-container">
+                                <div class="doughnut-chart" style="--progress-color: #10b981; --progress-angle: 360deg;">
+                                    <div class="doughnut-center">100%</div>
+                                </div>
+                            </div>
+                            <div class="progress-value">224 (100%)</div>
+                        </div>
+                        <!-- Progress Item: Enhancements Implemented -->
+                        <div class="progress-item">
+                            <div class="progress-label">Enhancements Implemented</div>
+                            <div class="doughnut-container">
+                                <div class="doughnut-chart" style="--progress-color: #3b82f6; --progress-angle: 162deg;">
+                                    <div class="doughnut-center">45%</div>
+                                </div>
+                            </div>
+                            <div class="progress-value">100 (45%)</div>
+                        </div>
+                        <!-- Progress Item: Journeys in Progress -->
+                        <div class="progress-item">
+                            <div class="progress-label">Journeys in Progress</div>
+                            <div class="doughnut-container">
+                                <div class="doughnut-chart" style="--progress-color: #f59e0b; --progress-angle: 198deg;">
+                                    <div class="doughnut-center">55%</div>
+                                </div>
+                            </div>
+                            <div class="progress-value">124 (55%)</div>
+                        </div>
+                        <!-- Progress Item: SMS Content -->
+                        <div class="progress-item">
+                            <div class="progress-label">SMS Content</div>
+                            <div class="doughnut-container">
+                                <div class="doughnut-chart" style="--progress-color: #8b5cf6; --progress-angle: 356.4deg;">
+                                    <div class="doughnut-center">99%</div>
+                                </div>
+                            </div>
+                            <div class="progress-value">305 (99%)</div>
+                        </div>
+                        <!-- Progress Item: Application Content -->
+                        <div class="progress-item">
+                            <div class="progress-label">Application Content</div>
+                            <div class="doughnut-container">
+                                <div class="doughnut-chart" style="--progress-color: #06b6d4; --progress-angle: 356.4deg;">
+                                    <div class="doughnut-center">99%</div>
+                                </div>
+                            </div>
+                            <div class="progress-value">12,892 (99%)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Channel Progress Section -->
+            <div class="section">
+                <h3>Progress by Channel</h3>
+                <div class="channels-grid" id="channelsGrid">
+                    <!-- Channels will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Key Objectives Section -->
+            <div class="section">
+                <h3>Key Objectives</h3>
+                <ul class="objectives-list">
+                    <li>Optimize 224 customer journeys</li>
+                    <li>Faster turnaround time</li>
+                    <li>Improved customer satisfaction</li>
+                    <li>Operational cost efficiency</li>
+                    <li>Increased digital channel adoption</li>
+                </ul>
+            </div>
+
+            <!-- Weekly Highlight Section -->
+            <div class="section">
+                <h3>Weekly Highlight</h3>
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: #374151; font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">No major journeys were closed this week as we have shifted our focus obtain a tentative target date for journeys implementation which is shown below in the journey details part.</h4>
+                </div>
+            </div>
+
+            <!-- Dependencies Section -->
+            <div class="section">
+                <h3>Dependencies</h3>
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: #374151; font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">Channel</h4>
+                    <div style="color: #4b5563; line-height: 1.6;">
+                        <p style="margin-bottom: 1rem;"><strong>1. KIB mobile:</strong> tied to digital factory KIB mobile enhancements sprint cycles, periodically (1-2 a month) subject to high priority instructions such as CBK, compliance, audit.</p>
+                        <p style="margin-bottom: 1rem;"><strong>2. ATM:</strong> CR implementation, approximate target date EOY. This is due to vendor enhancement timeline which requires 3 months and ITD integration which requires an additional month.</p>
+                        <p style="margin-bottom: 0;"><strong>3. SMS:</strong> linked with ITD development.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Insight Section -->
+            <div class="section">
+                <h3>AI Insight</h3>
+                <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 1.5rem; border-radius: 0.75rem; border-left: 4px solid #3b82f6;">
+                    <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="background: #3b82f6; color: white; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">AI</div>
+                        <div style="color: #1f2937; line-height: 1.6;">
+                            <p style="margin-bottom: 1rem; font-weight: 600;">Analysis reveals a three-tier implementation pattern across channels:</p>
+                            
+                            <p style="margin-bottom: 1rem;"><strong>High Performers (Branches 66%, ITM 67%):</strong> Physical touchpoints show strong execution, likely due to direct staff control and immediate feedback loops. These channels benefit from centralized management and quick iteration capabilities.</p>
+                            
+                            <p style="margin-bottom: 1rem;"><strong>Digital Channels (Application 34%, Contact Center 57%):</strong> The 68 application journeys represent the largest improvement opportunity. With 99% SMS and mobile content optimization complete, the infrastructure exists for rapid digital enhancement scaling.</p>
+                            
+                            <p style="margin-bottom: 1rem;"><strong>Constrained Channel (ATM 0%):</strong> The 22 ATM journeys, while representing 10% of total volume, create a bottleneck effect. However, their complexity classification (all "Complex = 4+ weeks") suggests significant customer impact once implemented.</p>
+                            
+                            <p style="margin-bottom: 0;"><strong>Strategic Recommendation:</strong> Focus immediate resources on the 23 remaining application journeys (68 total - 45 enhanced) to reach 60%+ overall implementation before year-end. This approach maximizes digital customer experience improvements while ATM vendor dependencies resolve.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ITD: BPM backlog discussion Section -->
+            <div class="section">
+                <h3>ITD: BPM backlog discussion</h3>
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <h4 style="color: #374151; font-size: 1.2rem; font-weight: 600; margin: 0;">Prioritized projects</h4>
+                        <p style="color: #6b7280; font-style: italic; font-size: 0.9rem; margin: 0;">Upon project completion will move to backlog unless scoring criteria is met and/or CBK, audit, compliance request</p>
+                    </div>
+                    <div style="color: #4b5563; line-height: 1.6;">
+                        <ol style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;">Credit card application <span class="red-text" style="font-size: 0.85rem; font-style: italic;">(UAT to begin in 1 month)</span></li>
+                            <li style="margin-bottom: 0.5rem;">Corporate 360</li>
+                            <li style="margin-bottom: 0.5rem;">Retail 360 <span class="red-text" style="font-size: 0.85rem; font-style: italic;">(Early stage of requirement study will take between 2 to 3 months)</span></li>
+                            <li style="margin-bottom: 0.5rem;">RLOS (Musawama & consumer) <span class="red-text" style="font-size: 0.85rem; font-style: italic;">(Very early stage will take 2 to 3 months after Retail 360)</span></li>
+                        </ol>
+                    </div>
+                    
+                    <h4 style="color: #374151; font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">Backlog</h4>
+                    
+                    <h5 style="color: #1f2937; font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem;">Current</h5>
+                    <div style="color: #4b5563; line-height: 1.6; margin-bottom: 1.5rem;">
+                        <ol style="margin-bottom: 1rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;">IBAN certificate</li>
+                            <li style="margin-bottom: 0.5rem;">GL to GL</li>
+                            <li style="margin-bottom: 0.5rem;">ITD-CR-2500331 include RLOS collateral</li>
+                        </ol>
+                    </div>
+                    
+                    <h5 style="color: #1f2937; font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem;">Upcoming</h5>
+                    <div style="color: #4b5563; line-height: 1.6;">
+                        <ol style="margin-bottom: 0; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;">Claims SMS notification</li>
+                            <li style="margin-bottom: 0.5rem;">ITD-CR-2500331 other points, technical review</li>
+                            <li style="margin-bottom: 0;">RLOS inboard DS team</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- Journey Details Section with Filters -->
+            <div class="section">
+                <h3>Journey Details</h3>
+                
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label for="channelFilter">Filter by Channel</label>
+                        <select id="channelFilter" class="filter-input">
+                            <option value="">All Channels</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="complexityFilter">Filter by Complexity</label>
+                        <select id="complexityFilter" class="filter-input">
+                            <option value="">All Complexities</option>
+                            <option value="Simple = 1 week">Simple (1 week)</option>
+                            <option value="Moderate = 2-3 weeks">Moderate (2-3 weeks)</option>
+                            <option value="Complex = 4+ weeks">Complex (4+ weeks)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statusFilter">Filter by Status</label>
+                        <select id="statusFilter" class="filter-input">
+                            <option value="">All Statuses</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="journeysList">
+                    <!-- Journey cards will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer">
+            <strong>Last updated:</strong> July 5, 2025 &nbsp;|&nbsp; 
+            <strong>Focus:</strong> Unlock ATM channel, +12 implementations to hit 50% target
+        </div>
+    </div>
+
+    <script>
+        // Complete journey data from JSON, mimicking a backend data source
+        const dashboardData = {
+            "journeyData": {
+                "totalJourneys": 224,
+                "smsMessages": 305,
+                "mobileContent": 12892,
+                "journeyReview": 100,
+                "journeyImplement": 45,
+                "smsMessagesProgress": 99,
+                "mobileAppProgress": 99
+            },
+            "objectives": [
+                "Optimize 224 customer journeys",
+                "Faster turnaround time",
+                "Improved customer satisfaction",
+                "Operational cost efficiency",
+                "Increased digital channel adoption"
+            ],
+            "progressData": [
+                { "name": "Total Identified Journeys", "value": 224 },
+                { "name": "Reviewed", "value": "224 (100%)" },
+                { "name": "Enhancements Implemented", "value": "100 (45%)" },
+                { "name": "Journeys in Progress", "value": "124 (55%)" },
+                { "name": "Target (Mid-Year)", "value": "100% reviewed/50% enhanced" }
+            ],
+            "channelData": [
+                { "channel": "Branches", "count": 35, "review": 100, "implementation": 66 },
+                { "channel": "Application", "count": 68, "review": 100, "implementation": 34 },
+                { "channel": "Contact-center", "count": 79, "review": 100, "implementation": 57 },
+                { "channel": "Atm", "count": 22, "review": 100, "implementation": 0 },
+                { "channel": "Itm", "count": 6, "review": 100, "implementation": 67 },
+                { "channel": "Dst", "count": 9, "review": 100, "implementation": 44 },
+                { "channel": "Black", "count": 4, "review": 100, "implementation": 25 }
+            ],
+            "journeysData": {
+                "applications": [
+                    { "id": 1, "journey": "1.5 Add choice", "comment": "Add choice functionality to application forms", "complexity": "Simple = 1 week", "status": "Pending" }
+                ],
+                "atm": [
+                    { "id": 1751709132656, "journey": "ATM language", "comment": "1. Based on customer profile\n2. Align language preference Ar to the right side and En to the left side", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709149728, "journey": "Weather", "comment": "Remove from screen", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709163001, "journey": "Balance Inquiry ATM", "comment": "1. Language based on customer preference\n2. Top 3 services\n3. Art work\n4. Small icons", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709177073, "journey": "Card Activation (PIN Assignment) ATM", "comment": "1. Phrase amendment \"Enter OTP you will receive\"", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709191520, "journey": "Cardless withdrawal CID ATM", "comment": "When transaction is done pop up messsage \"Return card \" is shown!", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709206600, "journey": "Cardless withdrawal Mobile ATM", "comment": "1. When transaction is done pop up messsage \"Return card \" is shown!\n2. Main screen option\n3. Transaction completion phrase to be revised \"Your transaction is completed successfully\"", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709219904, "journey": "Cash Deposit ATM", "comment": "View on home page\nInstruction tutorial\nتعزيز أيداع الخراب الا أيداع الشيكات", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709233008, "journey": "USSD Subscription ATM", "comment": "1. Language\n2. Confirm\n3. Discuss decommision", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709248641, "journey": "Cash Withdrawal ATM", "comment": "Click 1 and it will withdraw 10 KD fast withdrawal\nScreen for 200 KD should indicate 10 Kd instead of 20 KD when cassette is finished", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709272048, "journey": "CID Update ATM", "comment": "", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709330584, "journey": "Credit card Inquiry ATM", "comment": "1. Language based on customer preference\n2. Top 3 services\n3. Art work\n4. Small icons", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709346960, "journey": "Credit Card payment ATM", "comment": "1. Cant return to first page of cards if you go to the second (more than 3 cards)\n2. Phrase \"Payment\"\n3. Card layout\n4. Name impossed", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709360976, "journey": "Fast cash", "comment": "Pivot for average based on location", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709377544, "journey": "Loyalty Points redemption ATM", "comment": "1. Points calculation? Points or KD\n2. Cashback or Rewards?", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709393144, "journey": "Mini Statement ATM", "comment": "Ugly screen - to be sent via email / SMS, instead of available balance it should be mini statement", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709411304, "journey": "NFC Deposit", "comment": "1. When transaction is done pop up messsage \"Return card \" is shown!\n2. Main screen option\n3. Transaction completion phrase to be revised \"Your transaction is completed successfully\"", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709427288, "journey": "NFC Withdrawal", "comment": "1. When transaction is done pop up messsage \"Return card \" is shown!\n2. Main screen option\n3. Transaction completion phrase to be revised \"Your transaction is completed successfully\"", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709443040, "journey": "PIN Change ATM", "comment": "1. Phrase \"Change PIN\"\n2. Phrase \"Collect your card\"", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709460208, "journey": "SMS Subscription ATM", "comment": "1. Language\n2. Confirm\n3. Discuss decommision", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709476128, "journey": "Special Needs Services ATM", "comment": "1. Menu provides language option however only english voice will be provided\n2. Mini statement Ar on provides available balance ملايين و الآف ...", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709493544, "journey": "Transfer (Other Account) ATM", "comment": "1. Language based on customer preference\n2. Top 3 services\n3. Art work\n4. Small icons", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709511857, "journey": "Transfer (Own Accounts) ATM", "comment": "1. Phrase \"Please wait\"\n2. Account validation", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" }
+                ],
+                "black": [
+                    { "id": 1751709587448, "journey": "Channels experience", "comment": "1. ATM theme\n2. App theme + details\n3. Contact center assistance\n4. RM clearance (Services/access/24-7/WhatsApp octopus)", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751709596536, "journey": "Messages", "comment": "1. SMS templates\n2. Whatsapp templates", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751709609056, "journey": "Onboarding", "comment": "1. welcome package\n2. Declaration", "complexity": "Simple = 1 week", "status": "Pending" }
+                ],
+                "branch": [
+                    { "id": 1, "journey": "Appointment Booking", "comment": "Online appointment scheduling system", "complexity": "Moderate = 2-3 weeks", "status": "Pending" }
+                ],
+                "contact-center": [
+                    { "id": 1751709962104, "journey": "White List", "comment": "1. No SLA\n2. Fraud team 1 hr\n3. Call back\n4. There has to be a declined transaction in orer to whitelist the fraudblock rule that caused the decline\nSend by fax", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751709970648, "journey": "AccountLast5Transactions IVR", "comment": "If balance is zero it will only say zero\nDoes not mention available balance and current balance", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751709983631, "journey": "Beneficiaries", "comment": "1. AML triggered flow?", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751709998768, "journey": "Card delivery request", "comment": "1. is there evidence that customer was contacted by the branch?\n2. No SMS\n3. Review calls\nTawasul done", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710013951, "journey": "Wamd Enquiry", "comment": "Access for CC leaders on payment system", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710028488, "journey": "Card Printing", "comment": "1. App -> No front office alert -> call customer to confirm + location -> prepare to be ready for printing -> upon customer arrival - call us or ITM -> print card 3 min\n2. Report from printer only", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710042608, "journey": "Change Address", "comment": "Raise CR", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710060432, "journey": "Language", "comment": "Circular profile language and address w/Hassan", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751710074560, "journey": "ChangeTPIN", "comment": "Has to be reviewed from scratch", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710089495, "journey": "Claim", "comment": "1. Agent to directly submit through BPM no need to get approval from TL\n2. CR for refund SMS\n3. Instant claim is not instant and takes 1 working day", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710104039, "journey": "Upgrade Visa Card", "comment": "1. Why not process and print in ITM?", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710122048, "journey": "Credit card balance enquiry", "comment": "1. balance and past due given same amount\n2. wording", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751710137096, "journey": "Travel Insurance policy", "comment": "1. customer calls to issue travel insurance", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710156928, "journey": "Delivery Card Outside Kuwait", "comment": "1. receive request -> Full address + duration are minimum requirements -> issue card -> send email to cards unit -> cards take care of it -> stay duration 14 days\n2. No SLA\n3. No confirmation\n4. عائمه :)", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710172344, "journey": "Initial triggers (Systems)", "comment": "1. Tawasul\n2. BPM\n3. Workflow\nToo many platforms", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710189896, "journey": "Kyc Update", "comment": "1. App -> no notification on pending\n2. high risk -> access portal -> download form one by one -> cc approval via email -> submit in tawasul -> 1 working day\n3. in some cases request is returned to provide missing documents or to visit the branch\n4. back office no alert\n5. Pending request not a clear message\n2. Calls -> voice mail -> call back -> 5-7 min -> submit in tawasul -> call the customer -> no message if updated\nSend request to owner", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710205471, "journey": "Lg/Lc Enquiry", "comment": "Access for CC leaders", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710222696, "journey": "New prepaid card", "comment": "1. Request BPM access\n2. Allow issuance of debit and credit cards for a full digital experience", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710237616, "journey": "Online banking - change address", "comment": "1. Digital onborading fetching address in arabic\n2. Impact on local transfer\n3. no SLA", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710255832, "journey": "Online banking - change credit card limit", "comment": "1. decrease will submit workflow request to cards team\n2. increase will continue with new card application flow", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710273240, "journey": "Online banking - check book request", "comment": "1. reissue / first issue\n2. first issue must visit the branch and approval based on BM, on what grounds?\n3. No SLA\n4. No follow up\n5. Brnach not closing WF\n6. No report\nNot a good process in general", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710289415, "journey": "Online banking - contact", "comment": "1. Why create contact?\n2. If delay in any service let them submit complaint\n3. Branch to provide business card\nSMS confirmation\nAccess during holidays\nInforming customer", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710306103, "journey": "Online banking - EOS", "comment": "1. no reporting / feedback\n2. ebanking monitoring", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710321791, "journey": "Online banking - new finance", "comment": "1. script\n2. reject if fee balance not available\n3. impose name should populate existing", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710337104, "journey": "Online banking - new prepaid", "comment": "1. Agent to directly submit through BPM no need to get approval from TL\n2. CR for refund SMS\n3. Instant claim is not instant and takes 1 working day\nSMS confirmation\nInforming customer", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710353855, "journey": "Online banking - normal claim", "comment": "SMS confirmation\nInforming customer\nExceeding 45 days\nBranch / Ops not calculating days accurately\n*Closing staff should amend closing date", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710370783, "journey": "Online banking - release hold cards", "comment": "SMS confirmation\nAccess during holidays\nInforming customer", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710388336, "journey": "Online banking - release hold finance", "comment": "1. No SLA\n2. Fraud team 1 hr\n3. Call back\n4. There has to be a declined transaction in orer to whitelist the fraudblock rule that caused the decline\nTawasul done", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710404495, "journey": "Online banking - whitelist (fraud team)", "comment": "Access for CC leaders on payment system", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710420951, "journey": "Payment Inquiry", "comment": "Not validating sales of product", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710437928, "journey": "Referal sales", "comment": "1. SMS confirmation\n2. Informing customer\n3. Exceeding 45 days\n4. Branch / Ops not calculating days accurately\n*Closing staff should amend closing date\n5. Not hunting / collecting amounts\nAgents submits workflow to cards unit and takes 1 day, 45 days request is sent to cards --> Noura credit ops -> release in 1 day", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751710453639, "journey": "Release Hold ( Card )", "comment": "1. Need SMS confirmation\n2. Access during holidays\n3. Informing customer\nAgent submits workflow to collection to release and it takes 1 day", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710470400, "journey": "Release Hold ( Finance )", "comment": "1. STO customer -> calls -> not authenticated -> maybe benefits were credited and taken or STO stoppage submitted and not processed -> WF to collection unit -> May reply in action or to forward to credit ops\n2. No SLA\n3. Why not open account?\n4. عائمه :)", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751710488463, "journey": "Return Installment SO", "comment": "Description...", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751712275262, "journey": "Update Cid", "comment": "1. Add button to trigger PACI authentication", "complexity": "Complex = 4+ weeks", "status": "Pending" }
+                ],
+                "dst": [
+                    { "id": 1751709641360, "journey": "Credit card application", "comment": "1. double work 2. cortex -> issuer -> cc application -> create application for the customer -> RIM -> submit request in tawasul -> select instant/branch delivery -> card type -> staff name+RIM+branch -> limit + payment type + account -> BM/Boo in cortex -> aaplication + approval -> print -> change status to 32", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-09-01" },
+                    { "id": 1751709650280, "journey": "Finance (All types)", "comment": "Description...", "complexity": "Complex = 4+ weeks", "status": "Pending", "targetDate": "2025-12-31" },
+                    { "id": 1751709661472, "journey": "Open account RBD (All types)", "comment": "Wage account physical visit to keitan branch\nWeekend load on Sunday and Monday will increase account opening SLA from 15 min to 1 working day - manageing customer expectation and informing it will take 5 working days\nDaily reconciliation\nIBAN bulk certificate\nCard delivery - courier issue, no centralized number", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751709675232, "journey": "Paytally contracts (Vendor customers)", "comment": "Description...", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751709690032, "journey": "Paytally contracts (Vendor)", "comment": "1. Lengthy process\n2. Multiple touch points (Tawasul, Shariaa, Q&C, RBD-GM, Vendor management, Operation, Eman qasem)\n3. No tracking of declined contracts\n4. Different forms based on vendor sector\n5. إقرار تنازل", "complexity": "Complex = 4+ weeks", "status": "Pending" }
+                ],
+                "itm": [
+                    { "id": 1751709710720, "journey": "Cash deposit ITM", "comment": "Cannot deposit more than 3,000?\nNo source of fund", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751709720112, "journey": "Cheque Encashment ITM", "comment": "Description...", "complexity": "Simple = 1 week", "status": "Pending" }
+                ],
+                "application": [
+                    { "id": 1751652378272, "journey": "Advisory", "comment": "1. Card visuals\n2. Cashback, no button to direct to redemption page\n3. Service layout", "complexity": "Simple = 1 week", "status": "In Progress" },
+                    { "id": 1751652396264, "journey": "Login", "comment": "1. Session time out, to provide extend session option or extend from back end\n2. Log out is hidden in profile page, look into market ", "complexity": "Simple = 1 week", "status": "In Progress" },
+                    { "id": 1751652412040, "journey": "KIB pay", "comment": "1. First and second name are provided to recepient, look into first and last name\n2. If application language is in AR and link sent in EN the recepeint will receive link in AR and vice versa\n3. Look into shortening link\n4. Link title \"New payment request\", look into having a unique name \"KIB pay, payment request\"", "complexity": "Simple = 1 week", "status": "In Progress" },
+                    { "id": 1751657592612, "journey": "Delete Beneficiary -", "comment": "Disclaimer is too long\ndeleted beneficiary page hanged once done", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751657616692, "journey": "Finance Payment - Kwd", "comment": "1. بريقة في جدولة after monthly installment payment\n2. En version showing finance name in AR مراجعة مواد بيداء\n3. Partially paid after monthly installment payment", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751657639700, "journey": "KIB rewards", "comment": "1. Face ID / Password\n2. Governate & area wording", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751657658291, "journey": "Limit control", "comment": "1. Revise limit description (medium-low)\n2. Request sent disclaimer revise wording\n3. By operation limit\n4. Auto approve customized within limit", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751657681044, "journey": "Transfer Kib To Account - Standing Order - Usd", "comment": "1. Country flag\n2. USD to KD and vice versa option\n3. Conversion rate", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751657995651, "journey": "Swift Go", "comment": "1. Disclaimer max/min limit\n2. Equivalent --> equivalent to\n3. Option to select currency to transfer from KWD --> Foreign currency\n4. max 5 letters --> Check capitalization", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751658168795, "journey": "Transfer To Own Account - Standing Order - Usd", "comment": "1. Country flag\n2. USD to KD and vice versa option\n3. Conversion rate", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751658184979, "journey": "Transfer To Local Bank Account - Usd", "comment": "1. Country flag\n2. USD to KD and vice versa option\n3. Conversion rate", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751658201659, "journey": "Wakala deposit auto renewal", "comment": "To provide an option when opening Wakala deposits via mobile banking", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751658222227, "journey": "Transfer Kib To Account - Standing Order - Kwd", "comment": "1. Sender discretion?\n2. Other currencies\n3. Edit STO details", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751658242027, "journey": "Transfer To Own Account - Standing Order - Kwd", "comment": "1. Sender discretion?\n3. Edit STO details", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751658260243, "journey": "Password Recovery -", "comment": "Forgot password: the following image is not accurate as it is due to session expiry and not password expiry, I was able to perform the process again and use the same password.\nعند استرجاع كلمة المرور الخيارات تذكر ادخال كلمة المرور و تأكيد كلمة المرور و لكن الضوابط تذكر كلمة السر و تأكيد كلمة السر", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751658280947, "journey": "Transfer To Own Account - Usd", "comment": "1. Field validation: to replace \"required\" with \"Mandatory field\" or just keep the available disclaimer if the customer leaves it empty a message notification will mention the required minimum amount, the same goes for the Arabic version from.\n2. currency conversion\n3. ability to select transfer from in foreign and in KD currency", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751658298917, "journey": "Report Lost/Stolen/Damaged Credit Card -", "comment": "Report Lost/Stolen/Damaged Credit Card -", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751658310331, "journey": "Re-Activate Debit Card -", "comment": "arabic disclaimer to unpause needs revising - arrage with saleh alathari to revamp retail online banking dashboard", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751658341731, "journey": "Email Update -", "comment": "Opens message center then provides drop down option!", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751658359363, "journey": "Clearance Certificate -", "comment": "Clearance document!\nEmail/courier option", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751663400639, "journey": "Apply For A Finance -", "comment": "(+) to apply is not clear\n3 types of finance is available, what about the rest\nSpelling of installment Done", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751663439375, "journey": "Profile page", "comment": "My profile: tab is not visible / no indication that there is a menu", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751663462015, "journey": "Manage ATM card", "comment": "Manage ATM card: to view this menu a customer must select the account and then select manage ATM card, looking to have all ATM cards under card menu where they are visible from the main page.", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663483903, "journey": "Online banking - clearance certificate", "comment": "1. request validity check\n2. disable if customer has liability", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751663504911, "journey": "CID update", "comment": "New journey to update CID only", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751663525038, "journey": "Kyc Update -", "comment": "1. Pop-up? To indicate update\n2. Check validity status count down\n3. Wording to continue KYC\n4. CID update alone option\n5. Revise unable to update sentence\n6. \"I am not US person\" --> US citizen\n7. Wording اقرار\n8. Marital status --> capitalization\n9. Kids number --> Number of kids\n10. Business proceeds --> Business income\n11. If customer selects addres changed he needs to upload CID! why?\n12. Bi-annually --> biannual + other instances where duration drop down is provided\n13. Check banks lists --> Ahli united banks + Warba", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751663548831, "journey": "International Transfer - Standing Order - Usd", "comment": "1. Revise semi monthly\n2. Option to choose amount from KD to foreign and vice versa\n3. Edit STO is not available\n4. Revise STO delete message --> Why contact center?", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663565142, "journey": "Re-Activate Prepaid Card -", "comment": "1. add damage replace option\n2. add disclaimer to hand in damaged card\n3. sms / notify kib agent to follow up", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751663585847, "journey": "Stop Prepaid Card -", "comment": "1. add damage replace option\n2. add disclaimer to hand in damaged card\n3. sms / notify kib agent to follow up", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663604246, "journey": "Stop Debit Card -", "comment": "1. add damage replace option\n2. add disclaimer to hand in damaged card\n3. sms / notify kib agent to follow up", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663624487, "journey": "Transfer To Local Bank Account - Standing Order - Kwd", "comment": "1. Sender discretion?\n3. Edit STO details", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751663653295, "journey": "Re-Activate Credit Card -", "comment": "1. add damage replace option\n2. add disclaimer to hand in damaged card\n3. sms / notify kib agent to follow up", "complexity": "Simple = 1 week", "status": "Pending" },
+                    { "id": 1751663671439, "journey": "Stop Credit Card Request -", "comment": "1. add damage replace option\n2. add disclaimer to hand in damaged card\n3. sms / notify kib agent to follow up", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663690159, "journey": "Report Lost/Stolen/Damaged Prepaid Card -", "comment": "1. add damage replace option\n2. add disclaimer to hand in damaged card\n3. sms / notify kib agent to follow up", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751663706807, "journey": "Registration", "comment": "1. Need to check through online banking flow\n2. Change Our to Your paci authentication disclaimer\n3. user name disclaimer if bad word entered\n4. change phrase, upper and lower case\n5. password matching phrase revise\n6. security question \"merried\"\n7. Online registration design and layout", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663726158, "journey": "Add beneficiary", "comment": "Add tab to scroll down\nLocal IBAN validator on adding beneficiary\nError for IBANN/Acc# in arabic\nخيار تحويل المستفيد - Only one option", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663746423, "journey": "Report Lost/Stolen/Damaged Debit Card -", "comment": "1. add damage replace option\n2. add disclaimer to hand in damaged card\n3. sms / notify kib agent to follow up", "complexity": "Moderate = 2-3 weeks", "status": "Pending" },
+                    { "id": 1751663768847, "journey": "Charity Payment - Kwd", "comment": "Name in others list\n(+) to apply is not clear\nSame logo used for different charity", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663788991, "journey": "Apply For A Card -", "comment": "No validation\nCheck min limit\nOnly one option (Platinum)\nSequence of monthly plan\n\"Insert\" name she be enter\nBranch names amendment", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663809127, "journey": "WAMD transfer", "comment": "1. Transaction fail\n2. Unable to unlink only deactivate --> if number is registered to another KIB account I am unable to register in WAMD in that account", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663828279, "journey": "WAMD payment request", "comment": "1. Transaction fail\n2. Unable to unlink only deactivate --> if number is registered to another KIB account I am unable to register in WAMD in that account", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663849031, "journey": "Debit Card Travel Notification -", "comment": "Need fraud rules list, travel experience", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663869446, "journey": "Credit Card Travel Notification -", "comment": "1. Need fraud rules list, travel experience\n2. Disclaimer when applying travel notification --> SMS disabled and email enabled for better customer experience.", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663887870, "journey": "International Transfer - Usd", "comment": "Select Account / Select beneficiary small letter\nAdd country flag beneficiary drop down\nAdd country flag after selecting\nPayment type should be transfer type\nI Pay fees small letter\nAmount equevlent - Amount equevlanet to\nCorrerspondant fees showing 0 but total is adding 5 KWD\nReason Max should be Min\nموصي به - الخيار الأنسب / الخيار الأفضل\nباللغة العربية يوجد خانات باللغة الانجليزية\nيتم التحويل - سيتم التحويل في يوم العمل التالي", "complexity": "Complex = 4+ weeks", "status": "Pending" },
+                    { "id": 1751663906630, "journey": "Cardless Payment - Kwd", "comment": "Location to show\nProper error - share\nRelease hold??", "complexity": "Complex = 4+ weeks", "status": "Pending" }
+                ],
+                "branches": [
+                    { "id": 1751709774048, "journey": "Authority matrix", "comment": "1. Review and revise\n1. Authority matrix\n2. Too much mapping\n3. No SLA\n4. Statement leakage fees\n5. No track on authority matrix available limit\n6. Review message content for fee deduction", "complexity": "Complex = 4+ weeks", "status": "In Progress" },
+                    { "id": 1751709782192, "journey": "Fee_And_Refund (Waive)", "comment": "7. for refund no message", "complexity": "Complex = 4+ weeks", "status": "In Progress" },
+                    { "id": 1751709807904, "journey": "Finance application", "comment": "Description...", "complexity": "Complex = 4+ weeks", "status": "In Progress", "targetDate": "2025-12-31" },
+                    { "id": 1751709818192, "journey": "Fixed_Deposit", "comment": "Process for customer follow up\nAdd SMS for creating deposit\nSMS for deposit renewal\nSMS for deposit maturity\nSMS for deposit break", "complexity": "Complex = 4+ weeks", "status": "In Progress" },
+                    { "id": 1751709827280, "journey": "Issue_Certificate_Req / Car_Lien_Release", "comment": "1. No set role\n2. Liability: BPM->SO/RO->general form request Tawasul->Customer sign & BM sign-> collect 5 KD->BPM->sent to retention\n3. 5 days to process\n4. Call customer to collect original\n5. Athurised signature A/B\n6. Clearance: Ro/So to check customer liabilities and then continue similar to liabilities", "complexity": "Complex = 4+ weeks", "status": "In Progress" },
+                    { "id": 1751709839584, "journey": "Kib_Chequebook_Request", "comment": "1. Review steps -> RO/SO -> Cheque book request -> staff checks current account -> BM approval -> Submit in BPM -> ops support -> check backlist + fees -> 2 to 3 cheque book delivery -> branch collects -> branch ops collects -> call the custome -> upon customer arrival send blacklist check to ops support -> ops activates -> customer signs recieval form", "complexity": "Complex = 4+ weeks", "status": "In Progress" },
+                    { "id": 1751709853552, "journey": "Kib_Debit_Card_Ins_IsS", "comment": "1. BPM / cortex\n2. BPM -> New account -> Issue card -> authorize in cortex by operation -> print from cortex\n3. cortex -> Issuer -> RO/SO/RM -> Card -> Card issuance -> get detail from host -> CID/RIM -> Send to BM/Boo -> approve -> print: can be done by 2, change status to activate in ATM/App", "complexity": "Complex = 4+ weeks", "status": "In Progress" },
+                    { "id": 1751709868576, "journey": "Kib_Standing_Instruct", "comment": "1. SO/Ro -> company documents -> fill application SO -> upload in taasul -> ops -> review documents and deduct fees 10KD -> 1 to 2 days -> customer takes documents\n2. KIB issue with Rajhi and warba bank -> they don't have an account with KIB\n3. Check SMS", "complexity": "Complex = 4+ weeks", "status": "In Progress" },
+                    { "id": 1751709881464, "journey": "Phase_2_Claim_Req", "comment": "1. Fraud / Instant / Normal\n2. Fraud -> SO -> KYC -> Online action (Block) -> Stop card -> replacement -> claim BPM -> duration 30 min to 1 hr -> lengthy process + long duration\n3. Instant -> apply criteria Kuwaity/Salary -> request approval in tawasul per authority matrix\n4. Normal -> So -> submit in BPM cash deposit / cash withdrawal", "complexity": "Complex = 4+ weeks", "status": "In Progress" },
+                    { "id": 1751709895848, "journey": "Prepaid_Card_Req + credit card", "comment": "1. double work\n2. cortex -> issuer -> cc application -> create application for the customer -> RIM -> submit request in tawasul -> select instant/branch delivery -> card type -> staff name+RIM+branch -> limit + payment type + account -> BM/Boo in cortex -> aaplication + approval -> print -> change status to 32", "complexity": "Complex = 4+ weeks", "status": "In Progress", "targetDate": "2025-09-01" },
+                    { "id": 1751709912424, "journey": "Safe Deposit Locker Charge", "comment": "1. Locker locator\n2. SMS alert before renewal\n3. Head teller and BOO to escort customer to vault\n4. Admin to provide vault layout\n5. Create excel sheet with vault layout in order to check availability and allow customer to select prior to visiting the vault", "complexity": "Complex = 4+ weeks", "status": "In Progress" },
+                    { "id": 1751709926648, "journey": "Staff up (new role)", "comment": "1. Internal job posting\n2. Committee, Ops-Sales-SQU\n3. HR training 3 weeks", "complexity": "Complex = 4+ weeks", "status": "In Progress" }
+                ]
+            },
+            "timestamp": "2025-07-05T10:49:25.365Z"
+        };
+
+        // Helper to convert YYYY-MM-DD to DD/MM/YYYY for display
+        function formatDateForDisplay(dateString) {
+            if (!dateString) return '';
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        // Helper to convert DD/MM/YYYY to YYYY-MM-DD for internal storage
+        function formatDateForStorage(dateString) {
+            if (!dateString) return '';
+            const parts = dateString.split('/');
+            if (parts.length === 3) {
+                const [day, month, year] = parts;
+                return `${year}-${month}-${day}`;
+            }
+            // If the format is not DD/MM/YYYY, return as is (e.g., if it's already YYYY-MM-DD)
+            return dateString; 
+        }
+
+        // Function to flatten the nested journey data and add the channel information to each journey.
+        // This makes it easier to process and filter the data later.
+        function flattenJourneys(journeysData) {
+            const flattened = [];
+            for (const channel in journeysData) {
+                if (Array.isArray(journeysData[channel])) {
+                    journeysData[channel].forEach(journey => {
+                        flattened.push({
+                            ...journey,
+                            // Normalize channel names for consistent display and filtering
+                            channel: channel === 'contact-center' ? 'Contact-center' : 
+                                   channel === 'atm' ? 'Atm' :
+                                   channel === 'itm' ? 'Itm' :
+                                   channel === 'dst' ? 'Dst' :
+                                   channel === 'branches' ? 'Branches' :
+                                   channel === 'application' ? 'Application' :
+                                   channel === 'black' ? 'Black' :
+                                   channel.charAt(0).toUpperCase() + channel.slice(1) // Capitalize first letter for other channels
+                        });
+                    });
+                }
+            }
+            return flattened;
+        }
+
+        // Function to render the channel progress cards and populate the channel filter dropdown.
+        function renderChannels() {
+            const channelsGrid = document.getElementById('channelsGrid');
+            const channelFilter = document.getElementById('channelFilter');
+            
+            // Clear existing content before rendering
+            channelsGrid.innerHTML = '';
+            channelFilter.innerHTML = '<option value="">All Channels</option>'; // Add default "All Channels" option
+
+            dashboardData.channelData.forEach(channel => {
+                // Create and append each channel card
+                const channelCard = document.createElement('div');
+                channelCard.className = 'channel-card';
+                channelCard.innerHTML = `
+                    <div class="channel-header">
+                        <div class="channel-title">${channel.channel}</div>
+                        <div class="channel-count">${channel.count} journeys</div>
+                    </div>
+                    <div class="channel-progress-item">
+                        <div class="channel-progress-content">
+                            <div class="channel-progress-label">Reviewed</div>
+                            <div class="channel-progress-bar-container">
+                                <div class="channel-progress-bar progress-reviewed" style="width: ${channel.review}%;"></div>
+                            </div>
+                        </div>
+                        <div class="channel-progress-value">${channel.review}%</div>
+                    </div>
+                    <div class="channel-progress-item">
+                        <div class="channel-progress-content">
+                            <div class="channel-progress-label">Implemented</div>
+                            <div class="channel-progress-bar-container">
+                                <div class="channel-progress-bar progress-implemented" style="width: ${channel.implementation}%;"></div>
+                            </div>
+                        </div>
+                        <div class="channel-progress-value">${channel.implementation}%</div>
+                    </div>
+                `;
+                channelsGrid.appendChild(channelCard);
+
+                // Add channel to the filter dropdown
+                const option = document.createElement('option');
+                option.value = channel.channel;
+                option.textContent = channel.channel;
+                channelFilter.appendChild(option);
+            });
+        }
+
+        // Function to render the journeys in a table format.
+        function renderJourneys(journeys) {
+            const journeysList = document.getElementById('journeysList');
+            
+            // Display a message if no journeys match the filter criteria
+            if (journeys.length === 0) {
+                journeysList.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No journeys found matching your criteria.</p>';
+                return;
+            }
+
+            // Build the HTML for the journey table
+            let tableHTML = `
+                <div class="journey-table-container">
+                    <table class="journey-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%;">Journey</th>
+                                <th style="width: 60%;">Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            journeys.forEach(journey => {
+                // Determine the CSS class for the status pill based on journey status
+                const statusClass = journey.status === 'In Progress' ? 'status-in-progress' :
+                                  journey.status === 'Pending' ? 'status-pending' :
+                                  'status-completed';
+
+                // Add disclaimer for ATM channel journeys and apply red-text class
+                const disclaimer = journey.channel === 'Atm' ? '<span class="target-date-disclaimer red-text">(target date tentative)</span>' : '';
+
+                // Conditional rendering for the Target Date section
+                let targetDateSection;
+                if (journey.targetDate) {
+                    targetDateSection = `
+                        <div style="margin-top: 1rem;">
+                            <label for="targetDate-${journey.id}" style="font-size: 0.8rem; color: #6b7280; display: block; margin-bottom: 0.25rem;">Target Date:</label>
+                            <input type="text" id="targetDate-${journey.id}" class="target-date-input" 
+                                   value="${formatDateForDisplay(journey.targetDate)}"
+                                   onchange="window.updateTargetDate(${journey.id}, this.value)">
+                            ${disclaimer}
+                        </div>
+                    `;
+                } else if (journey.channel === 'Application') {
+                    targetDateSection = `
+                        <div style="margin-top: 1rem;">
+                            <span class="application-targeting-note">*Based on digital factory enhancement sprint cycles</span>
+                        </div>
+                    `;
+                }
+                else {
+                    targetDateSection = `
+                        <div style="margin-top: 1rem;">
+                            <span class="weekly-targeting-note">*Targeting on a weekly basis per committee meeting discussion</span>
+                        </div>
+                    `;
+                }
+
+                tableHTML += `
+                    <tr>
+                        <td>
+                            <div class="journey-name">${journey.journey}</div>
+                            <div class="journey-channel">${journey.channel}</div>
+                            <div class="journey-complexity">${journey.complexity}</div>
+                            <span class="status-pill ${statusClass}">${journey.status}</span>
+                        </td>
+                        <td>
+                            <div class="journey-comment">${journey.comment || 'No comment provided.'}</div>
+                            ${targetDateSection}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+                </div>
+            `;
+
+            journeysList.innerHTML = tableHTML;
+        }
+
+        // Function to handle target date updates (placeholder for actual data saving)
+        function updateTargetDate(journeyId, date) {
+            // In a real application, this would send the updated date to a backend database.
+            // Find the journey in allJourneys and update its targetDate
+            const journeyToUpdate = allJourneys.find(j => j.id === journeyId);
+            if (journeyToUpdate) {
+                // Convert the displayed DD/MM/YYYY format back to YYYY-MM-DD for internal storage
+                journeyToUpdate.targetDate = formatDateForStorage(date);
+                console.log(`Journey ${journeyId} target date updated to: ${journeyToUpdate.targetDate}`);
+                // Re-render to reflect the change, especially if filters are active
+                window.filterJourneys(); // Call filterJourneys globally
+            }
+        }
+
+        // Function to filter journeys based on selected criteria from the dropdowns.
+        function filterJourneys() {
+            const selectedChannel = document.getElementById('channelFilter').value;
+            const selectedComplexity = document.getElementById('complexityFilter').value;
+            const selectedStatus = document.getElementById('statusFilter').value;
+
+            let filtered = allJourneys; // Start with all journeys
+
+            // Apply filters sequentially
+            if (selectedChannel) {
+                filtered = filtered.filter(journey => journey.channel === selectedChannel);
+            }
+
+            if (selectedComplexity) {
+                filtered = filtered.filter(journey => journey.complexity === selectedComplexity);
+            }
+
+            if (selectedStatus) {
+                filtered = filtered.filter(journey => journey.status === selectedStatus);
+            }
+
+            renderJourneys(filtered); // Re-render the table with filtered data
+        }
+
+        // Make the updateTargetDate and filterJourneys functions globally accessible 
+        // so they can be called from inline HTML attributes and other global contexts.
+        window.updateTargetDate = updateTargetDate;
+        window.filterJourneys = filterJourneys;
+
+        // Initialize the dashboard: flatten data, render channels, and render all journeys initially.
+        // Update specific journeys in the dashboardData
+        dashboardData.journeysData.dst.forEach(journey => {
+            if (journey.journey === "Credit card application") {
+                journey.targetDate = "2025-09-01"; // Set to September 1, 2025
+            } else if (journey.journey === "Finance (All types)") {
+                journey.targetDate = "2025-12-31";
+            }
+        });
+
+        const allJourneys = flattenJourneys(dashboardData.journeysData);
+        
+        renderChannels();
+        renderJourneys(allJourneys);
+
+        // Add event listeners to the filter dropdowns to trigger filtering on change.
+        document.getElementById('channelFilter').addEventListener('change', filterJourneys);
+        document.getElementById('complexityFilter').addEventListener('change', filterJourneys);
+        document.getElementById('statusFilter').addEventListener('change', filterJourneys);
+    </script>
+</body>
+</html>
